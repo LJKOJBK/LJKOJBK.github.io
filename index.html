@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>翻牌游戏</title>
+	<style type="text/css">
+		#div1{
+			margin: 60px auto;
+			width: 500px;
+			height: 500px;
+			background-color: #06a2dd;
+		}
+		table{
+			width: 500px;
+			height: 500px;
+			text-align: center;
+			font-size: 40px;
+			font-weight: bold;
+			color: white;
+			border-collapse: collapse;
+		}
+		td{
+			width: 100px;
+			height: 125px;
+		}
+	</style>
+</head>
+<body>
+	<div id="div1"></div>
+	<script type="text/javascript">
+		// var map = [];					// 将一个排好序的数组打乱
+		// for(var i = 0;i < 10;i++)
+		// 	map[i] = i;
+		// map.sort(function(){return Math.random()-0.5})
+		// alert(map);
+		var cols = 4;
+		var rows = 5;
+		var last_i = -1, last_j = -1;
+		var arr = [];
+		var last = cols * rows;
+		var div1 = document.getElementById('div1');
+		
+		function createTab() {
+			var tab = '<table border="1">'
+			for(var i = 0;i < cols;i++){
+				tab += '<tr>';
+				for(var j = 0;j < rows;j++){
+					tab += '<td id="td' + (i * rows + j) + '"></td>';
+				}
+				tab += '</tr>';
+			}
+			tab += '</table>';
+			return tab;
+		}
+
+		function randomArr(range) {
+			var arr = [];
+			while(arr.length < (cols * rows / 2)){
+				var num = Math.floor(Math.random() * range);
+				if(arr.length == 0)
+					arr.push(num);
+				else{
+					if(arr.indexOf(num) == -1)
+						arr.push(num);
+				}
+			}
+			return arr;
+		}
+		
+		function addNum(){
+			var k = 0;
+			for(var i = 0;i < cols;i++)
+				arr[i] = new Array();
+			var random_Arr = randomArr(cols * rows / 2);
+			var order = randomArr(cols * rows);
+			for(var i = 0;i < order.length;i++){
+				arr[Math.floor(order[i] / rows)][order[i] % rows] = random_Arr[i];
+			}
+			
+			random_Arr = randomArr(cols * rows / 2);
+			for(var i = 0;i< cols;i++){
+				for(var j = 0;j < rows;j++){
+					if(arr[i][j] == undefined)
+						arr[i][j] = random_Arr[k++];
+					//document.getElementById('td' + (i * rows + j)).innerHTML = arr[i][j];
+				}
+			}
+
+		}
+
+		function flopGame() {
+			div1.innerHTML = createTab();
+			addNum();
+			for(var i = 0;i < cols;i++)
+				for(var j = 0;j < rows;j++){
+					document.getElementById('td' + (i * rows + j)).onclick = (function (i,j){
+						return function (){
+							if(last_i == -1){
+								last_i = i;
+								last_j = j;
+							} else if(arr[last_i][last_j] == arr[i][j]){
+								last_i = last_j = -1;
+								last -= 2;
+							}
+							else{
+								document.getElementById('td' + (last_i * rows + last_j)).innerHTML = '';
+								last_i = i;
+								last_j = j;
+							}
+
+							document.getElementById('td' + (i * rows + j)).innerHTML = arr[i][j];
+
+							if(last == 0){
+								last = -1;
+								alert('You Win!');
+							}
+						}
+					})(i,j)
+				}
+		}
+
+		flopGame();
+		
+	</script>
+</body>
+</html>
